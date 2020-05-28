@@ -15,11 +15,21 @@ router.get('/', async (req, res) => {
 
 });
 
+router.get('/getAllActive', async (req, res) => {
+    try {
+        // console.log("A");
+        var Posts = await PostsModel.find({'active':true}).populate('category');
+        res.json(Posts);
+    } catch (error) {
+        res.json({ message: error });
+    }
+
+});
 
 router.get('/byCategory/:categoryID', async (req, res) => {
     try {
         var Category = await CategoryModel.findById(req.params.categoryID);
-        var Posts = await PostsModel.find({ 'category': Category._id }).populate('category');
+        var Posts = await PostsModel.find({ 'category': Category._id, 'active': true}).populate('category');
         res.json(Posts);
     } catch (error) {
         res.json({ message: error });
@@ -31,7 +41,7 @@ router.get('/byCategory/:categoryID', async (req, res) => {
 router.get('/byCategory', async (req, res) => {
     var list = Array();
     try {
-        var allCount = await PostsModel.countDocuments({});
+        var allCount = await PostsModel.countDocuments({ 'active': true});
         list.push({
             id: "all",
             title: "All",
@@ -55,7 +65,7 @@ router.get('/byCategory', async (req, res) => {
 async function processArray(array) {
     var list = Array();
     for (const cat of array) {
-        var PostsCount = await PostsModel.countDocuments({ 'category': cat._id });
+        var PostsCount = await PostsModel.countDocuments({ 'category': cat._id, 'active': true });
         list.push({
             id: cat._id,
             title: cat.title,
@@ -114,7 +124,7 @@ router.get('/byTitle/search/:searchTxt', async (req, res) => {
     var a = req.params.searchTxt;
     console.log(a);
     try {
-        var Posts = await PostsModel.find({ 'title': { '$regex': a, '$options': 'i' } }).populate('category');
+        var Posts = await PostsModel.find({ 'title': { '$regex': a, '$options': 'i' }, 'active': true }).populate('category');
         res.json(Posts);
     } catch (error) {
         res.json({ message: error });
@@ -135,6 +145,7 @@ router.post('/add', async (req, res) => {
             htmlTxt: req.body.htmlTxt,
             active: req.body.active ? req.body.active:false,
             userID: req.body.userID,
+            thumbnail: req.body.thumbnail
         });
 
         console.log(req.body.title);
@@ -162,6 +173,7 @@ router.post('/update/:postID', async (req, res) => {
                     htmlTxt: req.body.htmlTxt,
                     active: true,
                     userID: req.body.userID,
+                    thumbnail: req.body.thumbnail
                 }
             });
         // console.log(updatedPost);

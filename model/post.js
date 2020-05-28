@@ -9,6 +9,7 @@ const PostsSchema = new mongoose.Schema({
     title: String,
     htmlTxt: String,
     active:Boolean,
+    thumbnail:String,
 }, {
     timestamps: true
 });

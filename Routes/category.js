@@ -28,7 +28,7 @@ router.get('/:categoryID', async (req, res) => {
 
 router.post('/add', async (req, res) => {
 
-
+console.log("OO");
     const Category = new CategoryModel({
         title: req.body.title,
     });
