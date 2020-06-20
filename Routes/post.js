@@ -18,7 +18,19 @@ router.get('/', async (req, res) => {
 router.get('/getAllActive', async (req, res) => {
     try {
         // console.log("A");
-        var Posts = await PostsModel.find({'active':true}).populate('category');
+        var Posts = await PostsModel.find({ 'active': true }).populate('category');
+        res.json(Posts);
+    } catch (error) {
+        res.json({ message: error });
+    }
+
+});
+
+
+router.get('/getAllActiveCount/:userID', async (req, res) => {
+    try {
+        // console.log("A");
+        var Posts = await PostsModel.countDocuments({ 'active': true, 'userID': req.params.userID });
         res.json(Posts);
     } catch (error) {
         res.json({ message: error });
@@ -29,7 +41,7 @@ router.get('/getAllActive', async (req, res) => {
 router.get('/byCategory/:categoryID', async (req, res) => {
     try {
         var Category = await CategoryModel.findById(req.params.categoryID);
-        var Posts = await PostsModel.find({ 'category': Category._id, 'active': true}).populate('category');
+        var Posts = await PostsModel.find({ 'category': Category._id, 'active': true }).populate('category');
         res.json(Posts);
     } catch (error) {
         res.json({ message: error });
@@ -41,7 +53,7 @@ router.get('/byCategory/:categoryID', async (req, res) => {
 router.get('/byCategory', async (req, res) => {
     var list = Array();
     try {
-        var allCount = await PostsModel.countDocuments({ 'active': true});
+        var allCount = await PostsModel.countDocuments({ 'active': true });
         list.push({
             id: "all",
             title: "All",
@@ -143,7 +155,7 @@ router.post('/add', async (req, res) => {
             title: req.body.title,
             category: Category._id,
             htmlTxt: req.body.htmlTxt,
-            active: req.body.active ? req.body.active:false,
+            active: req.body.active ? req.body.active : false,
             userID: req.body.userID,
             thumbnail: req.body.thumbnail
         });
